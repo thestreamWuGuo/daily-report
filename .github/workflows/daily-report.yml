@@ -1,0 +1,28 @@
+name: Daily Financial Report
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # UTC 0:00 = 北京时间 8:00
+  workflow_dispatch:       # 手动触发
+
+jobs:
+  generate-and-send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          JUHE_API_KEY: ${{ secrets.JUHE_API_KEY }}
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+        run: python daily_report.py
